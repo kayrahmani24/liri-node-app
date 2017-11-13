@@ -1,6 +1,8 @@
 var keys = require("./keys.js");
 
 var request = require("request");
+var fs = require("fs");
+
 var twitterKeys = keys.twitterKeys;
 var spotifyKeys = keys.spotifyKeys;
 
@@ -36,9 +38,11 @@ if (nodeCommand === "my-tweets") {
 		argPlusone = "Mr.Nobody";
 		getMovie(argPlusone);
 }else if (nodeCommand === "movie-this"){
-			getMovie(argPlusone);		
+			getMovie(argPlusone);					
+}else if (nodeCommand === "do-what-it-says"){
+	justDoIt();
 }else {
-	console.log("Cannot understand your request");
+	console.log("Sorry could not understand your request.")
 }
 
 function getTweets(){
@@ -57,7 +61,7 @@ clientTwitter.get('statuses/user_timeline', tweetParams, function(error, tweets,
 
 function getSpotify(value){
 
-clientSpotify.search({ type: 'track', query: argPlusone,limit: 1 }, function(err, data) {
+clientSpotify.search({ type: 'track', query: value,limit: 1 }, function(err, data) {
   if (err) {
     return console.log('Error occurred: ' + err);
   }
@@ -72,7 +76,7 @@ console.log("Album: " + data.tracks.items[0].album.name);
 
 function getMovie(value){
 
-	var queryUrl = "http://www.omdbapi.com/?t=" + argPlusone + "&y=&plot=short&apikey=40e9cece";
+	var queryUrl = "http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=40e9cece";
 
 console.log(queryUrl);
 
@@ -80,7 +84,7 @@ request(queryUrl, function(error, response, body) {
 
   if (!error && response.statusCode === 200) {
 
-    console.log("Movie Title: " + JSON.parse(body).Year);
+    console.log("Movie Title: " + JSON.parse(body).Title);
     console.log("Release Year: " + JSON.parse(body).Year);
     console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
     console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
@@ -94,5 +98,16 @@ request(queryUrl, function(error, response, body) {
 }  
 
 
+function justDoIt(){
+fs.readFile("random.txt", "utf8", function(error, data) {
+
+  if (error) {
+    return console.log(error);
+  }
+
+ getSpotify(data);
+
+});
+}
 
 
