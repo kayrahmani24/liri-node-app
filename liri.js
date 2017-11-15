@@ -1,6 +1,9 @@
+//LiNK TO KEYS
 var keys = require("./keys.js");
 
+// OMDB request
 var request = require("request");
+//npm to read file
 var fs = require("fs");
 
 var twitterKeys = keys.twitterKeys;
@@ -18,6 +21,8 @@ var userName = 'KevinArmani3';
 var argPlusone = "";
 var tweetParams = {screen_name: userName};
 
+
+//Creating loop if users input beyond index 3
 for (var i = 3;i<nodeArg.length; i++) {
 	if (i > 3 && i < nodeArg.length) {
 	argPlusone = argPlusone + "+" + nodeArg[i];
@@ -26,7 +31,7 @@ for (var i = 3;i<nodeArg.length; i++) {
 }
 };
 
-
+//Else/if to determine user's request
 if (nodeCommand === "my-tweets") {
 	getTweets();
 }else if (nodeCommand === "spotify-this-song" && (argPlusone === "" || null)) {
@@ -42,15 +47,17 @@ if (nodeCommand === "my-tweets") {
 }else if (nodeCommand === "do-what-it-says"){
 	justDoIt();
 }else {
-	console.log("Sorry could not understand your request.")
+	console.log("Sorry could not understand your request.");
 }
 
+//Twitter function to show tweets/was going to loop through the dates the tweets were tweeted but made them all at same time.
 function getTweets(){
 clientTwitter.get('statuses/user_timeline', tweetParams, function(error, tweets, response) {
   if (!error) {
      
   for (i = 0; i < tweets.length; i++) {
 	    	console.log("Kayvan Tweeted: "+ tweets[i].text);
+
 }
 
 }else {
@@ -58,15 +65,14 @@ clientTwitter.get('statuses/user_timeline', tweetParams, function(error, tweets,
 }
 });
 }
-
+//spotify function runs 
 function getSpotify(value){
 
-clientSpotify.search({ type: 'track', query: value,limit: 1 }, function(err, data) {
+clientSpotify.search({ type: 'track', query: value,limit: 5 }, function(err, data) {
   if (err) {
     return console.log('Error occurred: ' + err);
   }
- 
-
+//Displaying request on command line
 console.log("Artist: " + data.tracks.items[0].artists[0].name); 
 console.log("Song Name: " + data.tracks.items[0].name); 
 console.log("Link to Song: " + data.tracks.items[0].external_urls.spotify); 
@@ -74,6 +80,7 @@ console.log("Album: " + data.tracks.items[0].album.name);
 });
 } 
 
+//OMDB function takes parameter value which will be users input and runs it through api
 function getMovie(value){
 
 	var queryUrl = "http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=40e9cece";
@@ -83,7 +90,7 @@ console.log(queryUrl);
 request(queryUrl, function(error, response, body) {
 
   if (!error && response.statusCode === 200) {
-
+//displays information in command line
     console.log("Movie Title: " + JSON.parse(body).Title);
     console.log("Release Year: " + JSON.parse(body).Year);
     console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
@@ -96,14 +103,14 @@ request(queryUrl, function(error, response, body) {
 });
 
 }  
-
-
+//function take txt from random.txt file and place it through the parameter of the getSpotify fucntion
 function justDoIt(){
 fs.readFile("random.txt", "utf8", function(error, data) {
 
   if (error) {
     return console.log(error);
   }
+
 
  getSpotify(data);
 
